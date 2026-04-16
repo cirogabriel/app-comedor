@@ -1,16 +1,14 @@
 import { Router } from "express";
-import { StudentService } from "../services/student.service.js";
+import { AdminService } from "../services/admin.service.js";
 import { handleValidation } from "../middleware/handleValidation.js";
-import { createStudentSchema, getStudentSchema, updateStudentSchema } from "../schema/student.schema.js";
-import { checkRoles } from "../middleware/auth.handler.js";
+import { createAdminSchema, getAdminSchema, updateAdminSchema } from "../schema/admin.schema.js";
 import passport from "passport";
 
 const router = Router();
-const service = new StudentService();
+const service = new AdminService();
 
 router.get('/',
     passport.authenticate('jwt', { session: false }),
-    checkRoles,
     async (req, res, next) => {
         try {
             res.json(await service.find());
@@ -22,12 +20,11 @@ router.get('/',
 
 router.get('/:id',
     passport.authenticate('jwt', { session: false }),
-    checkRoles,
-    handleValidation(getStudentSchema, 'params'),
+    handleValidation(getAdminSchema, 'params'),
     async (req, res, next) => {
         try {
-            const studentId = parseInt(req.params.id, 10);
-            res.json(await service.findOne(studentId));
+            const id = parseInt(req.params.id, 10);
+            res.json(await service.findOne(id));
         } catch (error) {
             next(error);
         }
@@ -36,8 +33,7 @@ router.get('/:id',
 
 router.post('/',
     passport.authenticate('jwt', { session: false }),
-    checkRoles,
-    handleValidation(createStudentSchema, 'body'),
+    handleValidation(createAdminSchema, 'body'),
     async (req, res, next) => {
         try {
             res.status(201).json(await service.create(req.body));
@@ -49,13 +45,12 @@ router.post('/',
 
 router.patch('/:id',
     passport.authenticate('jwt', { session: false }),
-    checkRoles,
-    handleValidation(getStudentSchema, 'params'),
-    handleValidation(updateStudentSchema, 'body'),
+    handleValidation(getAdminSchema, 'params'),
+    handleValidation(updateAdminSchema, 'body'),
     async (req, res, next) => {
         try {
-            const studentId = parseInt(req.params.id, 10);
-            res.json(await service.update(studentId, req.body));
+            const id = parseInt(req.params.id, 10);
+            res.json(await service.update(id, req.body));
         } catch (error) {
             next(error);
         }
@@ -64,13 +59,12 @@ router.patch('/:id',
 
 router.delete('/:id',
     passport.authenticate('jwt', { session: false }),
-    checkRoles,
-    handleValidation(getStudentSchema, 'params'),
+    handleValidation(getAdminSchema, 'params'),
     async (req, res, next) => {
         try {
-            const studentId = parseInt(req.params.id, 10);
-            await service.delete(studentId);
-            res.status(200).json({ studentId });
+            const id = parseInt(req.params.id, 10);
+            await service.delete(id);
+            res.status(200).json({ id });
         } catch (error) {
             next(error);
         }

@@ -1,29 +1,25 @@
 import { Strategy } from 'passport-local';
-import { UserService } from "../../../services/user.service.js";
-import boom from "@hapi/boom";
+import { AdminService } from "../../../services/admin.service.js";
 import bcrypt from "bcrypt";
 
-const service = new UserService();
+const service = new AdminService();
 
 export const localStrategy = new Strategy({
     usernameField: 'email',
     passwordField: 'password'
 }, async (email, password, done) => {
     try {
-        const user = await service.findByEmail(email);
-        if (!user) {
-            return done(null, false, { message: 'The email does not exist' });
+        const admin = await service.findByEmail(email);
+        if (!admin) {
+            return done(null, false, { message: 'El email no existe' });
         }
-        const isMatch = await bcrypt.compare(password, user.password);
+        const isMatch = await bcrypt.compare(password, admin.password);
         if (!isMatch) {
-            return done(null, false, { message: 'The password is incorrect' });
+            return done(null, false, { message: 'Contraseña incorrecta' });
         }
-        delete user.password;
-        return done(null, user);
+        delete admin.password;
+        return done(null, admin);
     } catch (error) {
         return done(error);
     }
 });
-
-
-

@@ -4,6 +4,7 @@ import Modal from "../components/Modal.jsx";
 import { useAdmin } from "../context/adminContext.jsx";
 import FooterAdmin from "../components/FooterAdmin.jsx";
 import HeaderAdmin from "../components/HeaderAdmin.jsx";
+import ListBook from './ListBook.jsx';
 
 
 
@@ -23,7 +24,7 @@ const HomeAdmin = () => {
             <HeaderAdmin/>
             <section className='section-admin'>
                 <Outlet />
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. A alias amet aspernatur autem deserunt dolores earum excepturi facilis ipsa iusto laudantium magni necessitatibus numquam perspiciatis, placeat quia quo sapiente voluptas!
+               
             </section>
 
             {mostrarVentanaConfirmacion && (

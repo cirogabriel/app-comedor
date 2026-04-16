@@ -5,10 +5,11 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// datasource db {
-//   provider = "postgresql"
-//   url      = env("DATABASE_URL")
-// }
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
 
 // datasource db {
   // provider = "postgresql"
@@ -17,18 +18,36 @@ generator client {
 //}
 
 model Student {
-  id      Int     @id @default(autoincrement())
-  name    String  @db.VarChar(255)
-  surname String  @db.VarChar(255)
-  code    String  @unique @db.VarChar(6)
-  career  String  @db.VarChar(255)
-  diner   Boolean @default(false)
+  id       Int       @id @default(autoincrement())
+  name     String    @db.VarChar(255)
+  surname  String    @db.VarChar(255)
+  code     String    @unique @db.VarChar(6)
+  career   String    @db.VarChar(255)
+  email    String?   @unique @db.VarChar(255)
+  password String?   @db.VarChar(255)
+  bookings Booking[]
 }
 
-model User {
-  Id       Int    @id @default(autoincrement())
+model Admin {
+  id       Int    @id @default(autoincrement())
   username String @unique @db.VarChar(255)
   email    String @unique @db.VarChar(255)
   password String @db.VarChar(255)
-  role     String @db.VarChar(100)
+}
+
+model DiningDay {
+  id        Int       @id @default(autoincrement())
+  date      DateTime  @unique @db.Date  
+  capacity  Int       @default(100)    
+  bookings  Booking[]
+}
+
+model Booking {
+  id          Int       @id @default(autoincrement())
+  studentId   Int
+  diningDayId Int
+  student     Student   @relation(fields: [studentId], references: [id])
+  diningDay   DiningDay @relation(fields: [diningDayId], references: [id])
+  status      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
 }

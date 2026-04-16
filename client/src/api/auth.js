@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const instance = axios.create({
-    baseURL: 'https://restbook-8e57.onrender.com/api/v1',
-    //baseURL: "http://localhost:3000/api/v1",
+    // baseURL: 'https://restbook-8e57.onrender.com/api/v1',
+    baseURL: "http://localhost:3000/api/v1",
 });
 
 export const loginRequest = async (user) => {
