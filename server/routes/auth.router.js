@@ -11,7 +11,10 @@ router.post('/login', (req, res, next) => {
     passport.authenticate('local', { session: false }, async (err, user, info) => {
         try {
             if (err || !user) {
-                return res.json({ status: 401, message: info.message || 'Authentication failed' });
+                return res.json({ 
+                    status: 401, 
+                    message: info.message || 'Authentication failed'
+                 });
             }
             const payload = { sub: user.id };
             const token = jwt.sign(payload, configure.jwtSecret);

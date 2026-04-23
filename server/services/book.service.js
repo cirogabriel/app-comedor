@@ -3,6 +3,22 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+
+const findTodayDiningDay = async () => {
+    const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+    const endOfToday   = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+
+    return await prisma.diningDay.findFirst({
+        where: {
+            date: {
+                gte: startOfToday,
+                lte: endOfToday,
+            }
+        }
+    });
+};
+
 export class BookService {
 
     async getOrCreateToday() {

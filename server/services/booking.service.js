@@ -7,14 +7,36 @@ export class BookingService {
 
     async find(filters = {}) {
         const where = {};
-        if (filters.diningDayId) where.diningDayId = parseInt(filters.diningDayId);
-        if (filters.status !== undefined) where.status = filters.status === 'true';
+
+        if (filters.diningDayId) {
+            where.diningDayId = parseInt(filters.diningDayId);
+        }
+
+        if (filters.status !== undefined) {
+            where.status = filters.status === 'true';
+        }
+
+        if (filters.date) {
+            const [y, m, d] = filters.date.split('-').map(Number);
+            const startOfDay = new Date(y, m - 1, d, 0, 0, 0);
+            const endOfDay   = new Date(y, m - 1, d, 23, 59, 59);
+            const diningDay = await prisma.diningDay.findFirst({
+                where: {
+                    date: { gte: startOfDay, lte: endOfDay }
+                }
+            });
+            if (!diningDay) return [];
+            where.diningDayId = diningDay.id;
+        }
 
         return await prisma.booking.findMany({
             where,
             include: {
                 student: {
-                    select: { id: true, name: true, surname: true, code: true, career: true, email: true }
+                    select: {
+                        id: true, name: true, surname: true,
+                        code: true, career: true, email: true
+                    }
                 },
                 diningDay: true
             },
@@ -23,17 +45,24 @@ export class BookingService {
     }
 
     async findToday() {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        const now = new Date();
+        const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+        const endOfToday   = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
 
-        const diningDay = await prisma.diningDay.findUnique({ where: { date: today } });
+        const diningDay = await prisma.diningDay.findFirst({
+            where: { date: { gte: startOfToday, lte: endOfToday } }
+        });
+
         if (!diningDay) throw boom.notFound('No hay día habilitado hoy');
 
         const bookings = await prisma.booking.findMany({
             where: { diningDayId: diningDay.id },
             include: {
                 student: {
-                    select: { id: true, name: true, surname: true, code: true, career: true, email: true }
+                    select: {
+                        id: true, name: true, surname: true,
+                        code: true, career: true, email: true
+                    }
                 }
             },
             orderBy: { createdAt: 'desc' }

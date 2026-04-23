@@ -46,7 +46,6 @@ async function main() {
 
   console.log('Creando reservas...');
 
-  // Ayer: todos reservaron (8 cupos, solo 8 estudiantes)
   await Promise.all(
     createdStudents.slice(0, 8).map(s =>
       prisma.booking.create({
@@ -55,7 +54,6 @@ async function main() {
     )
   );
 
-  // Hoy: 6 con reserva confirmada, 2 canceladas, 2 sin reserva
   await Promise.all(
     createdStudents.slice(0, 6).map(s =>
       prisma.booking.create({
@@ -70,7 +68,6 @@ async function main() {
       })
     )
   );
-  // estudiantes 9 y 10 (134409, 134410) sin reserva hoy
 
   console.log('✓ Seed completado');
   console.log(`  ${createdStudents.length} estudiantes creados`);
