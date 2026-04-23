@@ -1,53 +1,50 @@
-import { Outlet } from 'react-router-dom'
-//import Sidebar from "../components/Sidebar.jsx";
-import Modal from "../components/Modal.jsx";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/authContext.jsx";
 import { useAdmin } from "../context/adminContext.jsx";
-import FooterAdmin from "../components/FooterAdmin.jsx";
-import HeaderAdmin from "../components/HeaderAdmin.jsx";
-import ListBook from './ListBook.jsx';
-
-
+import AdminSidebar from "../components/admin/AdminSidebar.jsx";
+import AdminHeader from "../components/admin/AdminHeader.jsx";
+import DashboardSection from "../components/admin/DashboardSection.jsx";
+import ReservasSection from "../components/admin/ReservasSection.jsx";
+import ReportesSection from "../components/admin/ReportesSection.jsx";
+import ConfigSection from "../components/admin/ConfigSection.jsx";
+import '../styles/admin.css';
 
 const HomeAdmin = () => {
+    const [activeSection, setActiveSection] = useState('reservas');
+    const { admin, logout } = useAuth();
+    const { darkMode } = useAdmin();
+    const navigate = useNavigate();
 
-    const {
-        mostrarVentanaConfirmacion,
-        setMostrarVentanaConfirmacion,
-        limpiarCupos,
-        mostrarVentanaResultado,
-        resultadoMensaje,
-        cerrarVentanaResultado
-        } = useAdmin();
+    const handleLogout = () => {
+        logout();
+        navigate('/');
+    };
 
     return (
-        <div className='admin-wrapper'>
-            <HeaderAdmin/>
-            <section className='section-admin'>
-                <Outlet />
-               
-            </section>
-
-            {mostrarVentanaConfirmacion && (
-                <Modal
-                    mensaje="¿Quieres limpiar todos los comensales?"
-                    onClose={() => setMostrarVentanaConfirmacion(false)}
-                >
-                    <button
-                        className="btn btn-outline-primary"
-                        onClick={() => { limpiarCupos(); setMostrarVentanaConfirmacion(false); }}>
-                        Aceptar
-                    </button>
-                </Modal>
-            )}
-
-            {mostrarVentanaResultado && (
-                <Modal mensaje={resultadoMensaje} onClose={cerrarVentanaResultado} />
-            )}
-
-            <FooterAdmin/>
+        <div
+            id="admin-root"
+            data-dark={String(darkMode)}
+            className="min-h-screen flex"
+        >
+            <AdminSidebar
+                activeSection={activeSection}
+                onSectionChange={setActiveSection}
+                onLogout={handleLogout}
+            />
+            <div className="flex-1 flex flex-col min-w-0">
+                <AdminHeader admin={admin} />
+                <main className="flex-1 px-4 md:px-8 py-6 md:py-8 overflow-auto">
+                    <div className="max-w-6xl mx-auto">
+                        {activeSection === 'dashboard'     && <DashboardSection />}
+                        {activeSection === 'reservas'      && <ReservasSection />}
+                        {activeSection === 'reportes'      && <ReportesSection />}
+                        {activeSection === 'configuracion' && <ConfigSection />}
+                    </div>
+                </main>
+            </div>
         </div>
     );
 };
 
 export default HomeAdmin;
-

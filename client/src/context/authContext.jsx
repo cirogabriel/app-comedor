@@ -1,50 +1,57 @@
-import { createContext, useContext, useState } from "react";
-import { loginRequest, bookRequest } from "../api/auth.js";
-import Cookies from "js-cookie";
-import PropTypes from 'prop-types';
+import { createContext, useContext, useState, useEffect } from "react";
+import PropTypes from "prop-types";
+import { loginRequest } from "../api/auth.js";
 
 export const AuthContext = createContext();
-
-export const useAuth = () => {
-    return useContext(AuthContext);
-}
+export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
+    const [admin, setAdmin] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [errors, setErrors] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    const signin = async (user) => {
+    useEffect(() => {
         try {
-            const response = await loginRequest(user);
-            console.log(response.data)
-            setUser(response);
-            setIsAuthenticated(true)
-        } catch (error) {
-            //console.log(error);
-            setErrors(error.message)
+            const token = localStorage.getItem('token');
+            const adminData = localStorage.getItem('admin');
+            if (token && adminData) {
+                setAdmin(JSON.parse(adminData));
+                setIsAuthenticated(true);
+            }
+        } catch {
+            localStorage.removeItem('token');
+            localStorage.removeItem('admin');
+        } finally {
+            setLoading(false);
         }
-    }
+    }, []);
+
+    const login = async (credentials) => {
+        const response = await loginRequest(credentials);
+        if (response.data.status === 401) {
+            throw new Error(response.data.message);
+        }
+        const { token, user } = response.data;
+        // guardar ANTES de cualquier request posterior
+        localStorage.setItem('token', token);
+        localStorage.setItem('admin', JSON.stringify(user));
+        setAdmin(user);
+        setIsAuthenticated(true);
+        return response;
+    };
 
     const logout = () => {
-        setUser(null);
+        localStorage.removeItem('token');
+        localStorage.removeItem('admin');
+        setAdmin(null);
         setIsAuthenticated(false);
-    }
+    };
 
     return (
-        <AuthContext.Provider
-            value={{
-                user,
-                errors,
-                isAuthenticated,
-                signin,
-                logout
-            }}>
+        <AuthContext.Provider value={{ admin, isAuthenticated, loading, login, logout }}>
             {children}
         </AuthContext.Provider>
-    )
-}
-
-AuthProvider.propTypes = {
-    children: PropTypes.node.isRequired
+    );
 };
+
+AuthProvider.propTypes = { children: PropTypes.node.isRequired };

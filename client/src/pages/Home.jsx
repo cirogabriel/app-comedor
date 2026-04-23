@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { User, Lock, UtensilsCrossed } from 'lucide-react';
+import { User, Lock, Soup } from 'lucide-react';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -8,22 +8,22 @@ const Home = () => {
     <div className="min-h-screen bg-[#f5f5f0] flex flex-col">
       {/* Hero Section */}
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-20">
-        <div className="text-center space-y-12 max-w-2xl w-full">
+        <div className="text-center space-y-12 w-full max-w-xs mx-auto">
 
           {/* Logo */}
-          <div className="space-y-8">
+          <div className="space-y-2">
             <div className="flex justify-center">
-              <div className="h-14 w-14 rounded-full border-2 border-[#1a1a1a] flex items-center justify-center">
-                <UtensilsCrossed className="h-7 w-7 text-[#1a1a1a]" strokeWidth={1.5} />
+              <div className="h-20 w-20 flex items-center justify-center">
+                <Soup className="h-16 w-16 text-[#1a1a1a]" strokeWidth={3} />
               </div>
             </div>
 
             <div className="space-y-4">
               <h1
                 className="text-7xl font-light text-[#1a1a1a] tracking-tight leading-none"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+                style={{ fontFamily: "'Pacifico', cursive" }}
               >
-                comedor
+                Comedor
               </h1>
               <p className="text-[10px] tracking-[0.25em] text-[#888] uppercase font-medium">
                 Sistema de Reservas Universitario
@@ -37,7 +37,7 @@ const Home = () => {
           </p>
 
           {/* Action Buttons */}
-          <div className="space-y-3 pt-4 w-full max-w-xs mx-auto">
+          <div className="space-y-3 pt-4 w-full">
             <button
               onClick={() => navigate('/estudiante')}
               className="flex items-center justify-between w-full px-6 py-4 border border-[#1a1a1a] bg-[#1a1a1a] text-white hover:bg-transparent hover:text-[#1a1a1a] transition-all duration-300"
@@ -67,7 +67,7 @@ const Home = () => {
       {/* Footer */}
       <div className="border-t border-[#ddd] py-8">
         <p className="text-center text-[10px] tracking-[0.2em] text-[#aaa] uppercase">
-          Comedor Universitario © 2024
+          Comedor Universitario © {new Date().getFullYear()}
         </p>
       </div>
     </div>

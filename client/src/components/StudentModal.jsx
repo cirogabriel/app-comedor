@@ -1,116 +1,145 @@
-import { UtensilsCrossed, X, CheckCircle, XCircle, AlertCircle } from "lucide-react";
+import PropTypes from "prop-types";
+import { useState } from "react";
+import { BadgeCheck, BadgeInfo, ShieldAlert, XCircle, X, Loader2, Trash2 } from "lucide-react";
 
 const StudentModal = ({ data, onClose, onCancel }) => {
-  const { status, message, hasReservation, studentData } = data;
+    const { status, message, bookingId, studentData, noDiningDay, cancelled, cancelError } = data;
+    const [cancelling, setCancelling] = useState(false);
 
-  const isSuccess = status === 200;
-  const isAlreadyBooked = status === 409;
+    const isSuccess    = status === 200 && !cancelled;
+    const isCancelled  = cancelled === true;
+    const isBooked     = status === 409 && !!bookingId;
+    const isFullBooked = status === 409 && !bookingId;
+    const isNotFound   = status === 404;
+    const isNoDining   = status === 503 || noDiningDay;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-      {/* Overlay */}
-      <div
-        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-        onClick={onClose}
-      />
+    const handleCancel = async () => {
+        if (!bookingId || cancelling) return;
+        setCancelling(true);
+        await onCancel(bookingId);
+        setCancelling(false);
+    };
 
-      {/* Modal Card */}
-      <div className="relative bg-white rounded-2xl shadow-xl border border-[#e8e8e8] w-full max-w-sm p-6 space-y-5 z-10">
+    const getConfig = () => {
+        if (isSuccess)    return { icon: BadgeCheck,  title: 'Reserva Confirmada',     subtitle: 'Tu lugar ha sido reservado para hoy.' };
+        if (isCancelled)  return { icon: XCircle,     title: 'Reserva Cancelada',      subtitle: 'Tu reserva fue eliminada.' };
+        if (isBooked)     return { icon: BadgeInfo,   title: 'Ya Reservaste',           subtitle: 'Tienes un lugar para el servicio de hoy.' };
+        if (isFullBooked) return { icon: ShieldAlert, title: 'Sin Cupos Disponibles',  subtitle: 'Todos los cupos se han llenado para hoy.' };
+        if (isNotFound)   return { icon: XCircle,     title: 'No Encontrado',           subtitle: 'El código no corresponde a ningún estudiante.' };
+        if (isNoDining)   return { icon: ShieldAlert, title: 'Sin Servicio Hoy',        subtitle: 'No hay comedor programado para hoy.' };
+        return              { icon: XCircle,     title: 'Error',                   subtitle: message || 'Ocurrió un error inesperado.' };
+    };
 
-        {/* Close */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-[#aaa] hover:text-[#1a1a1a] transition-colors"
-        >
-          <X className="h-5 w-5" />
-        </button>
+    const { icon: Icon, title, subtitle } = getConfig();
 
-        {/* Icon + Title */}
-        <div className="text-center space-y-3 pt-2">
-          <div className="flex justify-center">
-            <div className="h-14 w-14 rounded-full border-2 border-[#1a1a1a] flex items-center justify-center">
-              <UtensilsCrossed className="h-6 w-6 text-[#1a1a1a]" strokeWidth={1.5} />
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+            <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={onClose} />
+
+            <div className="relative bg-white w-full max-w-xs rounded-2xl z-10 overflow-hidden shadow-xl">
+
+                {/* Close */}
+                <button onClick={onClose}
+                    className="absolute top-3.5 right-3.5 text-[#ccc] hover:text-[#1a1a1a] transition-colors">
+                    <X className="h-4 w-4" />
+                </button>
+
+                {/* Cuerpo */}
+                <div className="px-6 pt-8 pb-6 flex flex-col items-center text-center space-y-4">
+
+                    {/* Icono */}
+                    <div className="h-11 w-11 rounded-full border border-[#e8e8e8] flex items-center justify-center">
+                        <Icon className="h-5 w-5 text-[#1a1a1a]" strokeWidth={1.5} />
+                    </div>
+
+                    {/* Título y subtítulo */}
+                    <div className="space-y-1.5">
+                        <h2 className="text-base font-semibold text-[#1a1a1a] tracking-tight">
+                            {title}
+                        </h2>
+                        <p className="text-sm text-[#888] leading-relaxed">
+                            {subtitle}
+                        </p>
+                    </div>
+
+                    {/* Card del estudiante */}
+                    {studentData?.name && (isSuccess || isBooked) && (
+                        <div className="w-full border border-[#e8e8e8] rounded-xl px-4 py-3 space-y-0.5">
+                            <p className="text-[10px] text-[#bbb] uppercase tracking-widest">
+                                Verificar
+                            </p>
+                            <p className="text-sm text-[#1a1a1a]">
+                                {studentData.name} {studentData.surname}
+                            </p>
+                        </div>
+                    )}
+
+                    {/* Info sin comedor */}
+                    {isNoDining && (
+                        <div className="w-full border border-[#e8e8e8] rounded-xl px-4 py-3 space-y-0.5">
+                            <p className="text-[10px] text-[#bbb] uppercase tracking-widest">
+                                Horario regular
+                            </p>
+                            <p className="text-sm text-[#1a1a1a]">
+                                Lunes a viernes · 11:30 – 14:00
+                            </p>
+                        </div>
+                    )}
+
+                    {/* Error cancelación */}
+                    {cancelError && (
+                        <p className="text-xs text-red-400 w-full text-left">{cancelError}</p>
+                    )}
+
+                    {/* Botones */}
+                    <div className="w-full pt-1 space-y-2">
+
+                        {/* Un botón */}
+                        {(isSuccess || isCancelled || isFullBooked || isNotFound || isNoDining) && (
+                            <button onClick={onClose}
+                                className="w-full py-3 bg-[#1a1a1a] text-white text-sm font-medium rounded-xl hover:bg-[#333] transition-all">
+                                Entendido
+                            </button>
+                        )}
+
+                        {/* Dos botones — ya reservado */}
+                        {isBooked && (
+                            <div className="flex gap-2">
+                                <button onClick={onClose}
+                                    className="flex-1 py-3 bg-white border border-[#e8e8e8] text-[#1a1a1a] text-sm font-medium rounded-xl hover:bg-[#f5f5f0] transition-all">
+                                    Entendido
+                                </button>
+                                <button onClick={handleCancel} disabled={cancelling}
+                                    className="flex-1 py-3 bg-[#1a1a1a] text-white text-sm font-medium rounded-xl hover:bg-[#333] disabled:opacity-40 transition-all flex items-center justify-center gap-1.5">
+                                    {cancelling
+                                        ? <><Loader2 className="h-3.5 w-3.5 animate-spin" /><span>Cancelando</span></>
+                                        : <><Trash2 className="h-3.5 w-3.5" /><span>Cancelar</span></>
+                                    }
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </div>
             </div>
-          </div>
-          <div>
-            <h2
-              className="text-2xl font-light text-[#1a1a1a]"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-            >
-              {isAlreadyBooked ? "Ya tienes reserva" : isSuccess ? "¡Reserva lista!" : "Sin disponibilidad"}
-            </h2>
-            {studentData?.nombre && (
-              <p className="text-sm text-[#888] mt-1">{studentData.nombre}</p>
-            )}
-          </div>
         </div>
+    );
+};
 
-        {/* Status badge */}
-        <div className={`flex items-center gap-3 px-4 py-3 rounded-xl ${isSuccess ? "bg-green-50 border border-green-100" : isAlreadyBooked ? "bg-blue-50 border border-blue-100" : "bg-red-50 border border-red-100"}`}>
-          {isSuccess
-            ? <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
-            : isAlreadyBooked
-            ? <AlertCircle className="h-5 w-5 text-blue-600 flex-shrink-0" />
-            : <XCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
-          }
-          <p className="text-sm text-[#444] leading-snug">{message}</p>
-        </div>
-
-        {/* Student basic data if available */}
-        {studentData && (
-          <div className="bg-[#f7f7f7] rounded-xl px-4 py-3 space-y-1">
-            {studentData.codigo && (
-              <div className="flex justify-between text-xs">
-                <span className="text-[#999] uppercase tracking-wide">Código</span>
-                <span className="text-[#1a1a1a] font-medium">{studentData.codigo}</span>
-              </div>
-            )}
-            {studentData.carrera && (
-              <div className="flex justify-between text-xs">
-                <span className="text-[#999] uppercase tracking-wide">Carrera</span>
-                <span className="text-[#1a1a1a] font-medium">{studentData.carrera}</span>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Actions */}
-        <div className="space-y-2 pt-1">
-          {isSuccess && (
-            <button
-              onClick={onClose}
-              className="w-full py-3.5 bg-[#1a1a1a] text-white text-sm font-semibold tracking-widest uppercase rounded-xl hover:bg-[#333] transition-all"
-            >
-              Confirmar Reserva
-            </button>
-          )}
-
-          {isAlreadyBooked && (
-            <>
-              {/*
-               * NOTA: Botón de cancelación implementado en UI.
-               * NO funcional hasta que el backend soporte el campo `estado` y el endpoint de cancelación.
-               */}
-              <button
-                onClick={onCancel}
-                className="w-full py-3.5 border border-[#1a1a1a] text-[#1a1a1a] text-sm font-semibold tracking-widest uppercase rounded-xl hover:bg-[#1a1a1a] hover:text-white transition-all"
-              >
-                Cancelar Reserva
-              </button>
-            </>
-          )}
-
-          <button
-            onClick={onClose}
-            className="w-full py-3 text-[#999] text-sm hover:text-[#1a1a1a] transition-colors"
-          >
-            Salir
-          </button>
-        </div>
-
-      </div>
-    </div>
-  );
+StudentModal.propTypes = {
+    data: PropTypes.shape({
+        status: PropTypes.number,
+        message: PropTypes.string,
+        bookingId: PropTypes.number,
+        studentData: PropTypes.shape({
+            name: PropTypes.string,
+            surname: PropTypes.string,
+        }),
+        noDiningDay: PropTypes.bool,
+        cancelled: PropTypes.bool,
+        cancelError: PropTypes.string,
+    }).isRequired,
+    onClose: PropTypes.func.isRequired,
+    onCancel: PropTypes.func.isRequired,
 };
 
 export default StudentModal;

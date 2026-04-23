@@ -1,0 +1,85 @@
+#admin-root {
+    background-color: #f5f5f0;
+    color: #1a1a1a;
+}
+
+#admin-root[data-dark="true"] {
+    background-color: #111;
+    color: #f0f0f0;
+}
+
+#admin-root[data-dark="true"] aside,
+#admin-root[data-dark="true"] header {
+    background-color: #1a1a1a !important;
+    border-color: #333 !important;
+}
+
+#admin-root[data-dark="true"] .bg-white {
+    background-color: #1a1a1a !important;
+}
+
+#admin-root[data-dark="true"] .bg-\[\#f5f5f0\] {
+    background-color: #111 !important;
+}
+
+#admin-root[data-dark="true"] .bg-\[\#f0f0f0\] {
+    background-color: #2a2a2a !important;
+}
+
+#admin-root[data-dark="true"] .border-\[\#e8e8e8\],
+#admin-root[data-dark="true"] .border-\[\#e0e0e0\] {
+    border-color: #333 !important;
+}
+
+#admin-root[data-dark="true"] .text-\[\#1a1a1a\] { color: #f0f0f0 !important; }
+#admin-root[data-dark="true"] .text-\[\#888\]    { color: #aaa !important; }
+#admin-root[data-dark="true"] .text-\[\#999\]    { color: #888 !important; }
+#admin-root[data-dark="true"] .text-\[\#666\]    { color: #bbb !important; }
+#admin-root[data-dark="true"] .text-\[\#444\]    { color: #ccc !important; }
+#admin-root[data-dark="true"] .text-\[\#bbb\]    { color: #777 !important; }
+#admin-root[data-dark="true"] .text-\[\#aaa\]    { color: #666 !important; }
+
+/* Botones negros → blancos en dark */
+#admin-root[data-dark="true"] .bg-\[\#1a1a1a\]:not(.no-invert) {
+    background-color: #f0f0f0 !important;
+    color: #1a1a1a !important;
+}
+#admin-root[data-dark="true"] .hover\:bg-\[\#333\]:hover {
+    background-color: #ddd !important;
+}
+
+/* Bordes negros → blancos */
+#admin-root[data-dark="true"] .border-\[\#1a1a1a\] {
+    border-color: #f0f0f0 !important;
+}
+
+/* Logo y avatar — círculo borde */
+#admin-root[data-dark="true"] .border-2.border-\[\#1a1a1a\] {
+    border-color: #f0f0f0 !important;
+}
+#admin-root[data-dark="true"] .border-2.border-\[\#1a1a1a\] svg {
+    color: #f0f0f0 !important;
+}
+
+/* Inputs y selects */
+#admin-root[data-dark="true"] input:not([type="checkbox"]),
+#admin-root[data-dark="true"] select {
+    background-color: #2a2a2a !important;
+    color: #f0f0f0 !important;
+}
+#admin-root[data-dark="true"] input::placeholder { color: #555 !important; }
+#admin-root[data-dark="true"] input:focus,
+#admin-root[data-dark="true"] select:focus {
+    background-color: #333 !important;
+    border-color: #f0f0f0 !important;
+    outline: none;
+}
+
+/* Hovers */
+#admin-root[data-dark="true"] .hover\:bg-\[\#f5f5f0\]:hover { background-color: #2a2a2a !important; }
+#admin-root[data-dark="true"] .hover\:bg-\[\#e8e8e8\]:hover { background-color: #333 !important; }
+#admin-root[data-dark="true"] .hover\:bg-\[\#333\]:hover    { background-color: #ddd !important; }
+
+/* Logout rojo */
+#admin-root[data-dark="true"] .text-red-500 { color: #f87171 !important; }
+#admin-root[data-dark="true"] .hover\:bg-red-50:hover { background-color: rgba(248,113,113,0.1) !important; }

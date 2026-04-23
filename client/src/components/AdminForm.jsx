@@ -27,7 +27,6 @@ const AdminForm = () => {
         }
     };
 
-    //resto del codigo
 
     return (
         <div className="form-wrapper-admin">

@@ -1,2 +1,16 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: 'GoogleSansCodeItalic';
+  src: url('/static/GoogleSansCode-Italic-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 900; /* porque es variable */
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Pacifico';
+  src: url('/static/Pacifico-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
