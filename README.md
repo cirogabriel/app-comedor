@@ -1,108 +1,146 @@
-# App-Comedor
+# Comedor Universitario
 
-App-Comedor es una simulación del comedor público universitario que permite registrar y consultar los datos de los alumnos, el sistema de pagos y las asistencias.
+Sistema de reservas para el comedor público universitario. Proyecto de portafolio desarrollado con metodología SCRUM.
 
-## Requisitos previos
+🌐 **[Ver demo en vivo](https://theplatepal.netlify.app/)**
 
-Para ejecutar este programa, necesitas tener instalado lo siguiente:
+---
 
-- Node.js 14.x o superior
-- npm 6.x o superior
-- PostgreSQL 13.x o superior o cualquier otro gestor de BBDD que soporte prisma
+## Stack
+
+| Capa | Tecnologías |
+|------|-------------|
+| Frontend | React 18, Vite, Tailwind CSS v4, Formik, ECharts, Lucide React |
+| Backend | Node.js, Express, Passport.js, JWT, bcrypt |
+| Base de datos | PostgreSQL 13+, Prisma ORM |
+| Seguridad | Google reCAPTCHA v2, JWT |
+| Infra | Docker, Docker Compose |
+
+---
+
+## Funcionalidades
+
+**Estudiante**
+- Reserva y cancelación de cupo diario
+- Verificación con Google reCAPTCHA
+- Notificaciones de estado (confirmado, sin cupos, sin servicio)
+
+**Administrador**
+- Dashboard con estadísticas del día y gráfico donut
+- Gestión de días de servicio — crear, editar, eliminar
+- Auto-programación semanal de días
+- Historial de reservas con calendario mensual
+- Búsqueda y filtrado de reservas y estudiantes
+- Modo oscuro / claro
+
+---
 
 ## Instalación
 
-Para instalar las dependencias de este proyecto, sigue estos pasos:
-
-1. Clona el repositorio de GitHub en tu máquina local usando el comando:
+### 1. Clonar
 
 ```bash
-git clone https://github.com/Lanubedethom/app-comedor.git
-```
-
-2. Entra en la carpeta del proyecto usando el comando:
-
-```bash
+git clone https://github.com/cirogabriel/app-comedor.git
 cd app-comedor
 ```
 
-3. Instala las dependencias del cliente usando el comando:
+### 2. Servidor
 
 ```bash
-cd client && npm install
+cd server
+npm install
 ```
 
-4. Instala las dependencias del servidor usando el comando:
+Crear `server/.env`:
 
-```bash
-cd server && npm install
+```env
+PORT=3000
+NODE_ENV=dev
+DB_USER=tu_usuario
+DB_PASSWORD=tu_contraseña
+DB_HOST=localhost
+DB_NAME=comedor_db
+DB_PORT=5432
+DATABASE_URL="postgresql://tu_usuario:tu_contraseña@localhost:5432/comedor_db"
+JWT_SECRET=tu_jwt_secret
+RECAPTCHA_SECRET_KEY=tu_recaptcha_secret
 ```
 
-5. Crea una base de datos PostgreSQL vacía y configura las variables de entorno en el archivo `.env` del servidor con los datos de conexión. 
-
-6. Ejecuta las migraciones de la base de datos usando el comando:
-
 ```bash
-npx prisma migrate dev --preview-feature
-```
-
-7. Genera el cliente de Prisma usando el comando:
-
-```bash
+npx prisma migrate dev --name init
 npx prisma generate
+node scripts/seed.js
+node scripts/createAdmin.js admin@unsaac.edu.pe 134403
 ```
 
-8. . Si estas usando otro SGBD, tienes que cambiar las configuraciones de `schema.prisma`
-```schema.prisma
-datasource db {
-  provider = "nombreSGBD"
-  url      = env("DATABASE_URL")
-}
+### 3. Cliente
+
+```bash
+cd ../client
+npm install
 ```
-Luego modificar la variable de entorno `DATABASE_URL ` en `.env` para la SGBD que estas usando.
+
+Crear `client/.env`:
+
+```env
+VITE_RECAPTCHA_SITE_KEY=tu_recaptcha_site_key
+```
+
+---
 
 ## Ejecución
 
-Para ejecutar el programa, sigue estos pasos:
-
-1. Inicia el servidor de desarrollo usando el comando:
-
 ```bash
-npm run dev
+# Servidor
+cd server && npm run dev
+
+# Cliente (nueva terminal)
+cd client && npm run dev
 ```
 
-2. Abre una nueva terminal y entra en la carpeta del cliente usando el comando:
+O con Docker:
 
 ```bash
-cd client
+docker-compose up
 ```
 
-3. Inicia el cliente de desarrollo usando el comando:
+---
 
-```bash
-npm run dev
+## Datos de prueba
+
+| Rol | Campo | Valor |
+|-----|-------|-------|
+| Estudiante | Código | `134401` |
+| Estudiante | Contraseña | `241101` |
+| Admin | Email | `admin@unsaac.edu.pe` |
+| Admin | Contraseña | `134403` |
+
+---
+
+## Estructura
+
+```
+app-comedor/
+├── client/
+│   └── src/
+│       ├── api/
+│       ├── components/
+│       ├── context/
+│       ├── lib/
+│       ├── pages/
+│       └── styles/
+└── server/
+    ├── config/
+    ├── middleware/
+    ├── routes/
+    ├── schema/
+    ├── services/
+    ├── scripts/
+    └── prisma/
 ```
 
-4. Abre un navegador web y accede a la dirección:
-
- `http://localhost:numeroDePuerto/`
-
-5. Explora las funcionalidades del sistema.
-
-## Ejemplos de uso
-
-Aquí puedes ver algunos ejemplos de uso del sistema:
-
-- Para...
+---
 
 ## Licencia
 
-Este proyecto está bajo la licencia MIT. Consulta el archivo [LICENSE](^2^) para más detalles.
-
-## Créditos
-
-Este proyecto fue creado por [Lanubedethom](^3^) como parte del curso de Metodologías del Desarrollo del Software
-
-## Contacto
-
-Si tienes alguna duda, sugerencia o comentario sobre este proyecto, puedes contactarme a través de mi correo electrónico: lanubedethom@gmail.com
+MIT © [cirogabriel](https://github.com/cirogabriel)
