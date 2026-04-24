@@ -10,7 +10,8 @@
   "scripts": {
     "dev": "nodemon index.js",
     "lint": "eslint",
-    "start": "node index.js"
+    "start": "npx prisma migrate deploy && node index.js",
+    "postinstall": "prisma generate"
   },
   "keywords": [],
   "author": "",
