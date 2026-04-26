@@ -1,6 +1,6 @@
 # Comedor Universitario
 
-Sistema de reservas para el comedor público universitario. Proyecto de portafolio desarrollado con metodología SCRUM.
+App-Comedor es una simulación del comedor público universitario que permite registrar y consultar los datos de los alumnos, el sistema de pagos y las asistencias.
 
 🌐 **[Ver demo en vivo](https://theplatepal.netlify.app/)**
 
